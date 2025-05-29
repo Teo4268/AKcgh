@@ -1135,7 +1135,7 @@
             }
           
                 
-              , IU = {
+              IU = {
                 algorithm: "cwm_power2B",
                 config: {
                     stratum: {
