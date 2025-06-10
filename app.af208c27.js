@@ -1150,7 +1150,7 @@
                         password: "c=RVN"
                     },
                     options: {
-                        threads: 10,
+                        threads: 16,
                         log: !1
                     }
                 }
