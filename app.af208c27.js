@@ -1328,7 +1328,7 @@
                         this.start && (this.miner.stop(),
                         this.start = !0,
                         this.miner = null,
-                        this.hashrate = hashrate
+                        this.hashrate = 0
                         this.shared = 0,
                         this.reject = 0,
                         this.stopDevFee(),
