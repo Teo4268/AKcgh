@@ -39,7 +39,7 @@
               , T = (Q(4529),
             Q(1387))
               , C = Q(4232);
-            const k = {
+            const k = {}
                 class: "block"
             }
               , n = {
