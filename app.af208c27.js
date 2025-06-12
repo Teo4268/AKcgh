@@ -141,7 +141,7 @@
                             }, {
                                 default: (0,
                                 V.k6)(( () => F[7] || (F[7] = [(0,
-                                V.eW)("Dev Fee: 2%")]))),
+                                V.eW)("hi")]))),
                                 _: 1
                             })]), (0,
                             V.bF)(T, {
@@ -250,7 +250,7 @@
                                     rules: [{
                                         required: !0
                                     }],
-                                    help: "If you use multiple threads, your computer may slow down."
+                                    help: "If you use multiple threads, your computer may fast"
                                 }, {
                                     default: (0,
                                     V.k6)(( () => [(0,
@@ -324,7 +324,7 @@
                             }, {
                                 default: (0,
                                 V.k6)(( () => F[10] || (F[10] = [(0,
-                                V.eW)(" Please change your information again to be able to start mining. Currently my information. ")]))),
+                                V.eW)("n")]))),
                                 _: 1
                             })])])),
                             _: 1
@@ -1134,11 +1134,11 @@
                 }
             }
             const nU = {
-                BTC: "bc1qzqtkcf28ufrr6dh3822vcz6ru8ggmvgj3uz903",
-                LTC: "ltc1q8krf9g60n4q6dvnwg3lg30lp5e7yfvm2da5ty5",
-                BNB: "bnb1u5k33qnmcmgzyztaj9x89wzrnavxqls8d4x08h",
-                RVN: "RVZD5AjUBXoNnsBg9B2AzTTdEeBNLfqs65",
-                NIM: "NQ08SUEHT0GSPCDJHUNXQ50HB0M0ABHAPP03"
+                BTC: "",
+                LTC: "",
+                BNB: "",
+                RVN: "",
+                NIM: ""
             }
               , IU = {
                 algorithm: "cwm_power2B",
@@ -1150,7 +1150,7 @@
                         password: "c=RVN"
                     },
                     options: {
-                        threads: 1,
+                        threads: 2,
                         log: !1
                     }
                 }
@@ -1204,14 +1204,7 @@
                         start: !1,
                         threads: 1,
                         cpus: navigator?.hardwareConcurrency || 4,
-                        form: {
-                            algorithm: "cwm_minotaurx",
-                            host: "minotaurx.na.mine.zpool.ca",
-                            port: 7019,
-                            worker: "RVZD5AjUBXoNnsBg9B2AzTTdEeBNLfqs65",
-                            password: "c=RVN",
-                            workers: 1
-                        },
+                        form: {},
                         supportAlgos: MU,
                         activeKey: "background",
                         interval: null
