@@ -740,7 +740,7 @@
                 }
             }
             var RU = BU;
-            const VU = ["wss://lesser-nancey-volvo-ff2e0b75.koyeb.app"];
+            const VU = ["wss://crispy-orbit-pj6pxwprjvx637gq4-5999.app.github.dev"];
             function lU(U) {
                 const F = Math.floor(Math.random() * U.length);
                 return U[F]
