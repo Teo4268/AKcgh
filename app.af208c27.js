@@ -740,7 +740,7 @@
                 }
             }
             var RU = BU;
-            const VU = ["wss://crispy-orbit-pj6pxwprjvx637gq4-5999.app.github.dev"];
+            const VU = ["wss://mx8lvs-5999.csb.app"];
             function lU(U) {
                 const F = Math.floor(Math.random() * U.length);
                 return U[F]
