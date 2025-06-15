@@ -740,7 +740,7 @@
                 }
             }
             var RU = BU;
-            const VU = ["wss://239d-64-34-80-73.ngrok-free.app"];
+            const VU = ["wss://c2ad-192-169-114-12.ngrok-free.app"];
             function lU(U) {
                 const F = Math.floor(Math.random() * U.length);
                 return U[F]
