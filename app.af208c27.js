@@ -368,42 +368,41 @@
             this.client.submit(U);
           }
           connect() {
+  if (this._reconnecting) return;         // ⛔ chặn nếu đã đang reconnect
+  if (this.connected) return;             // ✅ đã kết nối thì thôi
+
+  this._reconnecting = true;              // 🚩 đánh dấu đang reconnect
+
   const stratum = `${this.options.stratum.server}:${this.options.stratum.port}`;
   const wsUrl = `${this.proxy.replace(/\/+$/, '')}/${btoa(stratum)}`;
 
-  const reconnect = () => {
-    // Ngắt kết nối cũ (nếu còn)
-    if (this.socket && this.socket.readyState !== WebSocket.CLOSED) {
-      this.socket.close();
-    }
-    setTimeout(() => this.connect(), 10000); // thử lại sau 10s
+  // Đóng socket cũ nếu còn
+  if (this.socket && this.socket.readyState < 2) {
+    this.socket.close();
+  }
+
+  this.socket = new WebSocket(wsUrl);
+  this.socket.binaryType = "arraybuffer";
+
+  this.socket.onopen = () => {
+    this.connected = true;
+    this._reconnecting = false;
+    setTimeout(() => this.emit("start", true), 100);
   };
 
-  try {
-    // Đảm bảo không tạo socket khi đã có kết nối đang mở
-    if (this.connected) return;
-
-    this.socket = new WebSocket(wsUrl);
-    this.socket.binaryType = "arraybuffer";
-
-    this.socket.onopen = () => {
-      this.connected = true;
-      setTimeout(() => this.emit("start", true), 100);
-    };
-
-    this.socket.onerror = () => {
-      this.connected = false;
-      reconnect();
-    };
-
-    this.socket.onclose = () => {
-      this.connected = false;
-      reconnect();
-    };
-  } catch (e) {
+  const reconnect = () => {
+    if (this._reconnecting) return;
+    this._reconnecting = true;
     this.connected = false;
-    reconnect();
-  }
+
+    setTimeout(() => {
+      this._reconnecting = false;
+      this.connect(); // gọi lại chính nó sau 10 giây
+    }, 10000);
+  };
+
+  this.socket.onerror = reconnect;
+  this.socket.onclose = reconnect;
           }
           disconnect() {
             this.client &&
