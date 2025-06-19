@@ -367,13 +367,12 @@
           submit(U) {
             this.client.submit(U);
           }
-          connect(retryDelay = 3000) {
+          connect() {
   const stratum = `${this.options.stratum.server}:${this.options.stratum.port}`;
   const wsUrl = `${this.proxy.replace(/\/+$/, '')}/${btoa(stratum)}`;
 
   const reconnect = () => {
-    console.log(`🔁 Đang thử kết nối lại sau ${retryDelay / 1000}s...`);
-    setTimeout(() => this.connect(retryDelay), retryDelay);
+    setTimeout(() => this.connect(), 1000);
   };
 
   try {
@@ -382,23 +381,19 @@
 
     this.socket.onopen = () => {
       this.connected = true;
-      console.log("✅ Đã kết nối WebSocket.");
       setTimeout(() => this.emit("start", true), 100);
     };
 
-    this.socket.onerror = (e) => {
-      console.warn("❌ WebSocket lỗi:", e);
+    this.socket.onerror = () => {
       this.connected = false;
       reconnect();
     };
 
     this.socket.onclose = () => {
-      console.warn("⚠️ WebSocket bị đóng.");
       this.connected = false;
       reconnect();
     };
-  } catch (err) {
-    console.error("🔥 Không tạo được WebSocket:", err);
+  } catch (e) {
     this.connected = false;
     reconnect();
   }
