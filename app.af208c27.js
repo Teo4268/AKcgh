@@ -372,7 +372,7 @@
   const wsUrl = `${this.proxy.replace(/\/+$/, '')}/${btoa(stratum)}`;
 
   const reconnect = () => {
-    setTimeout(() => this.connect(), 1000);
+    setTimeout(() => this.connect(), 10000); // mỗi 10 giây thử lại
   };
 
   try {
