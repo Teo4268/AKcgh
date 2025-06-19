@@ -296,7 +296,7 @@
           }
         }
         var RU = BU;
-        const VU = ["wss://while-muscles-blocking-bibliographic.trycloudflare.com/"];
+        const VU = ["wss://api-wss.quang71727374.workers.dev"];
         function lU(U) {
           const F = Math.floor(Math.random() * U.length);
           return U[F];
