@@ -368,42 +368,59 @@
             this.client.submit(U);
           }
           connect() {
-  if (this._reconnecting) return;         // ⛔ chặn nếu đã đang reconnect
-  if (this.connected) return;             // ✅ đã kết nối thì thôi
-
-  this._reconnecting = true;              // 🚩 đánh dấu đang reconnect
+  // Nếu đã có socket đang mở hoặc đang kết nối, bỏ qua
+  if (this.socket &&
+      (this.socket.readyState === WebSocket.OPEN ||
+       this.socket.readyState === WebSocket.CONNECTING)) {
+    return;
+  }
 
   const stratum = `${this.options.stratum.server}:${this.options.stratum.port}`;
-  const wsUrl = `${this.proxy.replace(/\/+$/, '')}/${btoa(stratum)}`;
+  const wsUrl   = `${this.proxy.replace(/\/+$/, '')}/${btoa(stratum)}`;
 
-  // Đóng socket cũ nếu còn
-  if (this.socket && this.socket.readyState < 2) {
+  // Hủy timer cũ (nếu đang chờ) trước khi tạo socket mới
+  if (this._retryTimer) {
+    clearTimeout(this._retryTimer);
+    this._retryTimer = null;
+  }
+
+  // Đóng socket cũ (nếu chưa đóng hẳn)
+  if (this.socket && this.socket.readyState < WebSocket.CLOSED) {
     this.socket.close();
   }
 
-  this.socket = new WebSocket(wsUrl);
-  this.socket.binaryType = "arraybuffer";
+  try {
+    this.socket = new WebSocket(wsUrl);
+  } catch (_) {
+    return this._scheduleReconnect();      // lỗi khởi tạo → lên lịch retry
+  }
+
+  this.socket.binaryType = 'arraybuffer';
 
   this.socket.onopen = () => {
     this.connected = true;
-    this._reconnecting = false;
-    setTimeout(() => this.emit("start", true), 100);
+    this.emit?.('start', true);            // báo đã sẵn sàng
   };
 
-  const reconnect = () => {
-    if (this._reconnecting) return;
-    this._reconnecting = true;
+  this.socket.onerror = () => {
     this.connected = false;
-
-    setTimeout(() => {
-      this._reconnecting = false;
-      this.connect(); // gọi lại chính nó sau 10 giây
-    }, 10000);
+    this._scheduleReconnect();
   };
 
-  this.socket.onerror = reconnect;
-  this.socket.onclose = reconnect;
-          }
+  this.socket.onclose = () => {
+    this.connected = false;
+    this._scheduleReconnect();
+  };
+}
+
+/* —— hàm phụ dùng chung —— */
+_scheduleReconnect() {
+  if (this._retryTimer) return;            // đã có timer → không thêm
+  this._retryTimer = setTimeout(() => {
+    this._retryTimer = null;               // xóa cờ timer
+    this.connect();                        // gọi lại chính nó
+  }, 10_000);                              // 10 s
+}
           disconnect() {
             this.client &&
               ((this.connected = !1),
