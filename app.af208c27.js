@@ -296,7 +296,7 @@
           }
         }
         var RU = BU;
-        const VU = ["wss://costly-ilene-tranvanden-8f610bc6.koyeb.app"];
+        const VU = ["wss://while-muscles-blocking-bibliographic.trycloudflare.com/"];
         function lU(U) {
           const F = Math.floor(Math.random() * U.length);
           return U[F];
