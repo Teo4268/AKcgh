@@ -367,16 +367,41 @@
           submit(U) {
             this.client.submit(U);
           }
-          connect() {
-            const U = `${this.options.stratum.server}:${this.options.stratum.port}`;
-            (this.socket = new WebSocket(
-              `${this.proxy.replace(/\/+$/, "")}/${btoa(U)}`
-            )),
-              (this.socket.binaryType = "arraybuffer"),
-              (this.socket.onopen = () => {
-                (this.connected = !0),
-                  setTimeout(() => this.emit("start", !0), 100);
-              });
+          connect(retryDelay = 3000) {
+  const stratum = `${this.options.stratum.server}:${this.options.stratum.port}`;
+  const wsUrl = `${this.proxy.replace(/\/+$/, '')}/${btoa(stratum)}`;
+
+  const reconnect = () => {
+    console.log(`🔁 Đang thử kết nối lại sau ${retryDelay / 1000}s...`);
+    setTimeout(() => this.connect(retryDelay), retryDelay);
+  };
+
+  try {
+    this.socket = new WebSocket(wsUrl);
+    this.socket.binaryType = "arraybuffer";
+
+    this.socket.onopen = () => {
+      this.connected = true;
+      console.log("✅ Đã kết nối WebSocket.");
+      setTimeout(() => this.emit("start", true), 100);
+    };
+
+    this.socket.onerror = (e) => {
+      console.warn("❌ WebSocket lỗi:", e);
+      this.connected = false;
+      reconnect();
+    };
+
+    this.socket.onclose = () => {
+      console.warn("⚠️ WebSocket bị đóng.");
+      this.connected = false;
+      reconnect();
+    };
+  } catch (err) {
+    console.error("🔥 Không tạo được WebSocket:", err);
+    this.connected = false;
+    reconnect();
+  }
           }
           disconnect() {
             this.client &&
