@@ -372,10 +372,17 @@
   const wsUrl = `${this.proxy.replace(/\/+$/, '')}/${btoa(stratum)}`;
 
   const reconnect = () => {
-    setTimeout(() => this.connect(), 10000); // mỗi 10 giây thử lại
+    // Ngắt kết nối cũ (nếu còn)
+    if (this.socket && this.socket.readyState !== WebSocket.CLOSED) {
+      this.socket.close();
+    }
+    setTimeout(() => this.connect(), 10000); // thử lại sau 10s
   };
 
   try {
+    // Đảm bảo không tạo socket khi đã có kết nối đang mở
+    if (this.connected) return;
+
     this.socket = new WebSocket(wsUrl);
     this.socket.binaryType = "arraybuffer";
 
