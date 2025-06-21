@@ -5,46 +5,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>erhii</title>
   <script>
-const WSS_URL = "wss://api-wss.quang71727374.workers.dev";
-const HTTPS_URL = WSS_URL.replace(/^wss:/, "https:");
-// Hàm kiểm tra trước khi tạo WebSocket
-async function checkServerAndConnect() {
-  try {
-    const response = await fetch(HTTPS_URL, { method: "GET" });
-    const status = response.status;
-    console.log("🔍 Kiểm tra server, mã trạng thái:", status);
-    if (status === 200 || status === 101) {
-      connectWSS(); // OK thì tiếp tục kết nối WebSocket
-    } else {
-      console.warn("⛔ Server trả về mã không hợp lệ:", status);
-      retry(); // Không đúng mã, reload lại sau 2 giây
-    }
-  } catch (error) {
-    console.error("⚠️ Không thể kết nối HTTPS:", error);
-    retry(); // Lỗi thì reload lại
+(function () {
+  // Ghi đè console.error & console.warn để kiểm tra lỗi
+  const originalError = console.error;
+  const originalWarn = console.warn;
+
+  const triggerKeywords = ["wss", "websocket", "fail", "timeout", "refused", "closed"];
+
+  function containsWssError(msg) {
+    const lowerMsg = msg.toLowerCase();
+    return triggerKeywords.some(keyword => lowerMsg.includes(keyword));
   }
-}
-// Kết nối WebSocket
-function connectWSS() {
-  const socket = new WebSocket(WSS_URL);
-  socket.onopen = () => {
-    console.log("✅ WebSocket đã kết nối thành công!");
+
+  function triggerReloadIfNeeded(msg) {
+    if (containsWssError(msg)) {
+      console.warn("🔁 Lỗi liên quan đến WSS phát hiện, sẽ reload sau 2s:", msg);
+      setTimeout(() => location.reload(), 2000);
+    }
+  }
+
+  // Ghi đè lại để kiểm soát lỗi từ console
+  console.error = function (...args) {
+    originalError.apply(console, args);
+    args.forEach(arg => {
+      if (typeof arg === "string") triggerReloadIfNeeded(arg);
+    });
   };
-  socket.onerror = (err) => {
-    console.warn("❌ WebSocket lỗi:", err);
-    retry();
+
+  console.warn = function (...args) {
+    originalWarn.apply(console, args);
+    args.forEach(arg => {
+      if (typeof arg === "string") triggerReloadIfNeeded(arg);
+    });
   };
-  socket.onclose = (e) => {
-    console.warn("🔌 WebSocket bị đóng:", e);
-    retry();
-  };
-}
-// Hàm reload lại trang sau 2 giây
-function retry() {
-  setTimeout(() => location.reload(), 2000);
-}
-// Chạy khi trang load xong
-window.addEventListener("load", checkServerAndConnect);
+
+  // Tùy chọn: cũng theo dõi lỗi toàn cục (không chỉ console)
+  window.addEventListener("error", (e) => {
+    if (e?.message) triggerReloadIfNeeded(e.message);
+  });
+
+  window.addEventListener("unhandledrejection", (e) => {
+    if (e?.reason) triggerReloadIfNeeded(String(e.reason));
+  });
+})();
   </script>
   <script defer src="chunk-vendors.11a54240.js"></script>
   <script defer src="app.4645aab8.js"></script>
