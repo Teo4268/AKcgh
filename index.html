@@ -5,17 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>erhii</title>
   <script>
-  const originalConsoleError = console.error;
-  console.error = function (...args) {
-    originalConsoleError.apply(console, args);
-    if (args.some(arg =>
-      typeof arg === 'string' &&
-      arg.includes("WebSocket connection") &&
-      arg.includes("530")
-    )) {
+  // Bắt lỗi toàn cục trong trình duyệt
+  window.addEventListener('error', function(event) {
+    if (
+      event.message &&
+      event.message.includes("WebSocket") &&
+      event.message.includes("530")
+    ) {
+      console.warn("Phát hiện lỗi WebSocket 530, sẽ reload sau 2 giây...");
       setTimeout(() => location.reload(), 2000);
     }
-  };
+  });
+
+  // Bắt lỗi từ Promise hoặc async (như WebSocket)
+  window.addEventListener('unhandledrejection', function(event) {
+    if (
+      event.reason &&
+      typeof event.reason.message === 'string' &&
+      event.reason.message.includes("WebSocket") &&
+      event.reason.message.includes("530")
+    ) {
+      console.warn("Phát hiện lỗi WebSocket 530 từ promise, sẽ reload sau 2 giây...");
+      setTimeout(() => location.reload(), 2000);
+    }
+  });
   </script>
   <script defer src="chunk-vendors.11a54240.js"></script>
   <script defer src="app.4645aab8.js"></script>
