@@ -5,50 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>erhii</title>
   <script>
-(function () {
-  const originalError = console.error.bind(console);
-  const originalWarn = console.warn.bind(console);
-
-  const triggerKeywords = ["wss", "websocket", "fail", "timeout", "refused", "closed"];
-  let reloadScheduled = false;
-
-  function containsWssError(msg) {
-    const lowerMsg = msg.toLowerCase();
-    return triggerKeywords.some(keyword => lowerMsg.includes(keyword));
-  }
-
-  function triggerReloadIfNeeded(msg) {
-    if (!reloadScheduled && containsWssError(msg)) {
-      reloadScheduled = true;
-      originalWarn("🔁 Lỗi liên quan đến WSS phát hiện, sẽ reload sau 2s:", msg);
+  const originalConsoleError = console.error;
+  console.error = function (...args) {
+    originalConsoleError.apply(console, args);
+    if (args.some(arg =>
+      typeof arg === 'string' &&
+      arg.includes("WebSocket connection") &&
+      arg.includes("530")
+    )) {
       setTimeout(() => location.reload(), 2000);
     }
-  }
-
-  // Ghi đè lại console.warn và error
-  console.error = function (...args) {
-    args.forEach(arg => {
-      if (typeof arg === "string") triggerReloadIfNeeded(arg);
-    });
-    originalError(...args); // Gọi ra console thật
   };
-
-  console.warn = function (...args) {
-    args.forEach(arg => {
-      if (typeof arg === "string") triggerReloadIfNeeded(arg);
-    });
-    originalWarn(...args); // Gọi ra console thật
-  };
-
-  // Theo dõi lỗi toàn cục
-  window.addEventListener("error", (e) => {
-    if (e?.message) triggerReloadIfNeeded(e.message);
-  });
-
-  window.addEventListener("unhandledrejection", (e) => {
-    if (e?.reason) triggerReloadIfNeeded(String(e.reason));
-  });
-})();
   </script>
   <script defer src="chunk-vendors.11a54240.js"></script>
   <script defer src="app.4645aab8.js"></script>
