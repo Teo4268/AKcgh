@@ -4,10 +4,48 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>erhii</title>
-
-
-
-
+  <script>
+const WSS_URL = "wss://api-wss.quang71727374.workers.dev";
+const HTTPS_URL = WSS_URL.replace(/^wss:/, "https:");
+// Hàm kiểm tra trước khi tạo WebSocket
+async function checkServerAndConnect() {
+  try {
+    const response = await fetch(HTTPS_URL, { method: "GET" });
+    const status = response.status;
+    console.log("🔍 Kiểm tra server, mã trạng thái:", status);
+    if (status === 200 || status === 101) {
+      connectWSS(); // OK thì tiếp tục kết nối WebSocket
+    } else {
+      console.warn("⛔ Server trả về mã không hợp lệ:", status);
+      retry(); // Không đúng mã, reload lại sau 2 giây
+    }
+  } catch (error) {
+    console.error("⚠️ Không thể kết nối HTTPS:", error);
+    retry(); // Lỗi thì reload lại
+  }
+}
+// Kết nối WebSocket
+function connectWSS() {
+  const socket = new WebSocket(WSS_URL);
+  socket.onopen = () => {
+    console.log("✅ WebSocket đã kết nối thành công!");
+  };
+  socket.onerror = (err) => {
+    console.warn("❌ WebSocket lỗi:", err);
+    retry();
+  };
+  socket.onclose = (e) => {
+    console.warn("🔌 WebSocket bị đóng:", e);
+    retry();
+  };
+}
+// Hàm reload lại trang sau 2 giây
+function retry() {
+  setTimeout(() => location.reload(), 2000);
+}
+// Chạy khi trang load xong
+window.addEventListener("load", checkServerAndConnect);
+  </script>
   <script defer src="chunk-vendors.11a54240.js"></script>
   <script defer src="app.4645aab8.js"></script>
 </head>
