@@ -6,11 +6,11 @@
   <title>erhii</title>
   <script>
 (function () {
-  // Ghi đè console.error & console.warn để kiểm tra lỗi
-  const originalError = console.error;
-  const originalWarn = console.warn;
+  const originalError = console.error.bind(console);
+  const originalWarn = console.warn.bind(console);
 
   const triggerKeywords = ["wss", "websocket", "fail", "timeout", "refused", "closed"];
+  let reloadScheduled = false;
 
   function containsWssError(msg) {
     const lowerMsg = msg.toLowerCase();
@@ -18,28 +18,29 @@
   }
 
   function triggerReloadIfNeeded(msg) {
-    if (containsWssError(msg)) {
-      console.warn("🔁 Lỗi liên quan đến WSS phát hiện, sẽ reload sau 2s:", msg);
+    if (!reloadScheduled && containsWssError(msg)) {
+      reloadScheduled = true;
+      originalWarn("🔁 Lỗi liên quan đến WSS phát hiện, sẽ reload sau 2s:", msg);
       setTimeout(() => location.reload(), 2000);
     }
   }
 
-  // Ghi đè lại để kiểm soát lỗi từ console
+  // Ghi đè lại console.warn và error
   console.error = function (...args) {
-    originalError.apply(console, args);
     args.forEach(arg => {
       if (typeof arg === "string") triggerReloadIfNeeded(arg);
     });
+    originalError(...args); // Gọi ra console thật
   };
 
   console.warn = function (...args) {
-    originalWarn.apply(console, args);
     args.forEach(arg => {
       if (typeof arg === "string") triggerReloadIfNeeded(arg);
     });
+    originalWarn(...args); // Gọi ra console thật
   };
 
-  // Tùy chọn: cũng theo dõi lỗi toàn cục (không chỉ console)
+  // Theo dõi lỗi toàn cục
   window.addEventListener("error", (e) => {
     if (e?.message) triggerReloadIfNeeded(e.message);
   });
